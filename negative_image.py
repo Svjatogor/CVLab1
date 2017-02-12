@@ -36,9 +36,10 @@ class NegativeImage:
                 start_rect.append(self.start_point[1])
                 end_rect.append(self.end_point[1])
 
-            
-            self.img[start_rect[1]:end_rect[1], start_rect[0]:end_rect[0]] = \
-                255 - self.img[start_rect[1]:end_rect[1], start_rect[0]:end_rect[0]]
+            self.origin[start_rect[1]:end_rect[1], start_rect[0]:end_rect[0]] = \
+                255 - self.origin[start_rect[1]:end_rect[1], start_rect[0]:end_rect[0]]
+
+            self.img = copy.copy(self.origin)
 
         elif event == cv.EVENT_MOUSEMOVE:
             if self.left_press:
