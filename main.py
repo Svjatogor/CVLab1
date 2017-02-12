@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-
-import sys
 from PyQt4 import QtGui, QtCore
-import threading
-import cv2 as cv
 from os.path import expanduser
+import os
+import subprocess
+import sys
 
 
 class MainApp(QtGui.QWidget):
@@ -12,9 +11,9 @@ class MainApp(QtGui.QWidget):
         super(MainApp, self).__init__()
         self.open_btn = QtGui.QPushButton('Open')
 
-        # threads param
-        self.last_thread_id = 0
-        self.thread_lock = threading.Lock()
+        # subprocess param
+        self.pipes = []
+        self.negative_image_process = os.path.join(os.path.dirname(__file__), "./negative_image.py")
 
         self.init_ui()
         self.setup()
@@ -37,10 +36,13 @@ class MainApp(QtGui.QWidget):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open image', expanduser("~"), "Image files (*.jpg *.png)")
         if not filename.isEmpty():
             str_filename = filename.toUtf8().data()
-            # create thread
-            self.last_thread_id += 1
-            t = ImageTransformThread(self.last_thread_id, str(self.last_thread_id), str_filename, self.thread_lock)
-            t.start()
+            # create subprocess
+            command = [sys.executable, self.negative_image_process]
+            pipe = subprocess.Popen(command, stdin=subprocess.PIPE)
+            self.pipes.append(pipe)
+            pipe.stdin.write(str_filename)
+            pipe.stdin.close()
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
