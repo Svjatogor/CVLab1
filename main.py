@@ -36,7 +36,22 @@ class MainApp(QtGui.QWidget):
             str_filename = filename.toUtf8().data()
             img = cv.imread(str_filename)
             window_name = str_filename.split('/')[-1].split('.')[0]
-            cv.imshow(window_name, img)
+            cv.namedWindow(window_name, cv.WINDOW_AUTOSIZE)
+            # set callback to click mouse
+            cv.setMouseCallback(window_name, self.my_mouse_callback, img)
+            while True:
+                cv.imshow(window_name, img)
+
+                key = cv.waitKey(33);
+                if key == 27:
+                    break
+            cv.destroyWindow(window_name)
+
+    def my_mouse_callback(self, event, x, y, flags, param):
+        if event == cv.EVENT_LBUTTONDOWN:
+            cv.circle(param, (x, y), 100, (0, 0, 255))
+        elif event == cv.EVENT_LBUTTONUP:
+            cv.circle(param, (x, y), 100, (255, 0, 0))
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
