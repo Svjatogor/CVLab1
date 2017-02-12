@@ -12,6 +12,7 @@ class NegativeImage:
         self.window_name = self.image_path.split('/')[-1].split('.')[0]
         self.img = cv.imread(self.image_path)
         self.origin = copy.copy(self.img)
+        self.start_img = copy.copy(self.img)
 
     def my_mouse_callback(self, event, x, y, flags, param):
         if event == cv.EVENT_LBUTTONDOWN:
@@ -36,8 +37,9 @@ class NegativeImage:
                 start_rect.append(self.start_point[1])
                 end_rect.append(self.end_point[1])
 
+            roi = self.origin[start_rect[1]:end_rect[1], start_rect[0]:end_rect[0]]
             self.origin[start_rect[1]:end_rect[1], start_rect[0]:end_rect[0]] = \
-                255 - self.origin[start_rect[1]:end_rect[1], start_rect[0]:end_rect[0]]
+                255 - roi
 
             self.img = copy.copy(self.origin)
 
@@ -56,6 +58,9 @@ class NegativeImage:
             key = cv.waitKey(33)
             if key == 27:
                 break
+            elif key == 32:
+                self.img = copy.copy(self.start_img)
+                self.origin = copy.copy(self.start_img)
 
         cv.destroyWindow(self.window_name)
         print 'Process ' + self.window_name + ' exiting'
